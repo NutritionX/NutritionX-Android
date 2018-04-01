@@ -8,7 +8,7 @@
         android:id="@+id/enter_food_label"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:text="Enter food name:"
+        android:text="@string/enter_food_name"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
