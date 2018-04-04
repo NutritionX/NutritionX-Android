@@ -1,5 +1,8 @@
 package org.elsys.nutritionx;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -17,8 +20,14 @@ import android.widget.TextView;
 import com.otaliastudios.autocomplete.Autocomplete;
 import com.otaliastudios.autocomplete.AutocompletePolicy;
 import com.otaliastudios.autocomplete.AutocompletePresenter;
+import com.otaliastudios.autocomplete.CharPolicy;
+
+import org.elsys.nutritionx.models.Food;
+import org.elsys.nutritionx.presenters.FoodPresenter;
 
 public class MainActivity extends AppCompatActivity {
+
+    private Autocomplete mFoodAutoComplete;
 
     private TextView mEnterFoodLabel;
     private EditText mEnterFoodEditText;
@@ -31,53 +40,15 @@ public class MainActivity extends AppCompatActivity {
         mEnterFoodLabel = findViewById(R.id.enter_food_label);
         mEnterFoodEditText = findViewById(R.id.enter_food_edit_text);
 
-        AutocompletePolicy policy = new AutocompletePolicy() {
-            @Override
-            public boolean shouldShowPopup(Spannable text, int cursorPos) {
-                return false;
-            }
+        Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
+        float elevation = 6f;
+        AutocompletePresenter<Food> foodPresenter = new FoodPresenter(this);
 
-            @Override
-            public boolean shouldDismissPopup(Spannable text, int cursorPos) {
-                return false;
-            }
-
-            @Override
-            public CharSequence getQuery(Spannable text) {
-                return null;
-            }
-
-            @Override
-            public void onDismiss(Spannable text) {
-
-            }
-        };
-
-        AutocompletePresenter presenter = new AutocompletePresenter(this) {
-            @Override
-            protected ViewGroup getView() {
-                return null;
-            }
-
-            @Override
-            protected void onViewShown() {
-
-            }
-
-            @Override
-            protected void onQuery(@Nullable CharSequence query) {
-
-            }
-
-            @Override
-            protected void onViewHidden() {
-
-            }
-        };
-
-        Autocomplete.on(mEnterFoodEditText)
-                .with(policy)
-                .with(presenter)
+        mFoodAutoComplete = Autocomplete.<Food>on(mEnterFoodEditText)
+                .with(new Autocomplete.SimplePolicy())
+                .with(elevation)
+                .with(backgroundDrawable)
+                .with(foodPresenter)
                 .build();
     }
 }

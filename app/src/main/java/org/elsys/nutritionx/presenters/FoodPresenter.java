@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,9 @@ import com.otaliastudios.autocomplete.RecyclerViewPresenter;
 import org.elsys.nutritionx.R;
 import org.elsys.nutritionx.models.Food;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FoodPresenter extends RecyclerViewPresenter<Food> {
 
@@ -40,17 +43,24 @@ public class FoodPresenter extends RecyclerViewPresenter<Food> {
 
     @Override
     protected void onQuery(@Nullable CharSequence query) {
-        List<Food> foodList = Food.findByName();
+        Log.d("triggered", "onQuery");
+
+        List<Food> foods = Food.findByName();
 
         if (TextUtils.isEmpty(query)) {
-            adapter.setData(foodList);
+            adapter.setData(foods);
         } else {
-
+            List<Food> foundFoodsList = foods.stream()
+                    .filter(f -> f.getName().toLowerCase().contains(query.toString().toLowerCase()))
+                    .collect(Collectors.toList());
+            Log.d("foundFoodsList", foundFoodsList.toString());
+            adapter.setData(foundFoodsList);
         }
+        adapter.notifyDataSetChanged();
     }
 
     class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
-        private List<Food> foodList;
+        private List<Food> foodsList = new ArrayList<>();
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -63,27 +73,25 @@ public class FoodPresenter extends RecyclerViewPresenter<Food> {
                 return;
             }
 
-            final Food food = foodList.get(position);
+            final Food food = foodsList.get(position);
             holder.mFoodName.setText(food.getName());
-            holder.root.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dispatchClick(food);
-                }
+            holder.root.setOnClickListener(view -> {
+                Log.d("clicked", "true");
+                dispatchClick(food);
             });
         }
 
-        public void setData(List<Food> foodList) {
-            this.foodList = foodList;
+        public void setData(List<Food> foodsList) {
+            this.foodsList = foodsList;
         }
 
         @Override
         public int getItemCount() {
-            return foodList.size();
+            return foodsList.size();
         }
 
         private boolean hasItems() {
-            return foodList != null && !foodList.isEmpty();
+            return foodsList != null && !foodsList.isEmpty();
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
