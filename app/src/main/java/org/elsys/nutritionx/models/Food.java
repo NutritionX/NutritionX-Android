@@ -1,5 +1,7 @@
 package org.elsys.nutritionx.models;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Food {
@@ -77,5 +79,13 @@ public class Food {
     public int hashCode() {
 
         return Objects.hash(name, calories, protein, carbs, fats);
+    }
+
+    public static List<Food> findByName() {
+        List<Food> found = new ArrayList<>();
+
+        found.add(new Food("Banitsa", 200f, 35f, 110f, 90f));
+
+        return found;
     }
 }
