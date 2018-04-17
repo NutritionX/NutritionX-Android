@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,7 @@ import com.otaliastudios.autocomplete.RecyclerViewPresenter;
 
 import org.elsys.nutritionx.R;
 import org.elsys.nutritionx.models.Food;
+import org.elsys.nutritionx.utils.Screen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,42 +21,41 @@ import java.util.stream.Collectors;
 
 public class FoodPresenter extends RecyclerViewPresenter<Food> {
 
-    private Adapter adapter;
+    private Context mContext;
+    private Adapter mAdapter;
 
     public FoodPresenter(Context context) {
         super(context);
+        mContext = context;
     }
 
     @Override
     protected RecyclerView.Adapter instantiateAdapter() {
-        adapter = new Adapter();
-        return  adapter;
+        mAdapter = new Adapter();
+        return mAdapter;
     }
 
     @Override
     protected PopupDimensions getPopupDimensions() {
         PopupDimensions dims = new PopupDimensions();
-        dims.width = 500;
+        dims.width = (int) Screen.dpToPx(350f, mContext);
         dims.height = RecyclerView.LayoutParams.WRAP_CONTENT;
         return dims;
     }
 
     @Override
     protected void onQuery(@Nullable CharSequence query) {
-        Log.d("triggered", "onQuery");
-
         List<Food> foods = Food.findByName();
 
         if (TextUtils.isEmpty(query)) {
-            adapter.setData(foods);
+            mAdapter.setData(foods);
         } else {
             List<Food> foundFoodsList = foods.stream()
                     .filter(f -> f.getName().toLowerCase().contains(query.toString().toLowerCase()))
                     .collect(Collectors.toList());
-            Log.d("foundFoodsList", foundFoodsList.toString());
-            adapter.setData(foundFoodsList);
+            mAdapter.setData(foundFoodsList);
         }
-        adapter.notifyDataSetChanged();
+        mAdapter.notifyDataSetChanged();
     }
 
     class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
@@ -75,10 +74,7 @@ public class FoodPresenter extends RecyclerViewPresenter<Food> {
 
             final Food food = foodsList.get(position);
             holder.mFoodName.setText(food.getName());
-            holder.root.setOnClickListener(view -> {
-                Log.d("clicked", "true");
-                dispatchClick(food);
-            });
+            holder.root.setOnClickListener(view -> dispatchClick(food));
         }
 
         public void setData(List<Food> foodsList) {
@@ -98,7 +94,7 @@ public class FoodPresenter extends RecyclerViewPresenter<Food> {
             private View root;
             private TextView mFoodName;
 
-            public ViewHolder(View itemView) {
+            ViewHolder(View itemView) {
                 super(itemView);
                 root = itemView;
                 mFoodName = itemView.findViewById(R.id.food_name);

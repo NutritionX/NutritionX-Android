@@ -1,7 +1,5 @@
 package org.elsys.nutritionx.models;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -87,18 +85,16 @@ public class Food {
     public static List<Food> findByName() {
         List<Food> found = new ArrayList<>();
 
-        IntStream.range(1, 10).forEach(i -> {
-            Log.d("generated", String.valueOf(i));
-            found.add(new Food(
-                    "Test " + i,
-                    100f,
-                    100f,
-                    100f,
-                    100f
-            ));
-        });
+        IntStream.range(1, 10).forEach(i ->
+                found.add(new Food(
+                        "Test " + i,
+                        100f,
+                        100f,
+                        100f,
+                        100f
+                ))
+        );
 
-        Log.d("generated", found.toString());
         return found;
     }
 }
