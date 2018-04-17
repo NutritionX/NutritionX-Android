@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.Spannable;
 import android.view.View;
 import android.view.Menu;
@@ -18,6 +19,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.otaliastudios.autocomplete.Autocomplete;
+import com.otaliastudios.autocomplete.AutocompleteCallback;
 import com.otaliastudios.autocomplete.AutocompletePolicy;
 import com.otaliastudios.autocomplete.AutocompletePresenter;
 import com.otaliastudios.autocomplete.CharPolicy;
@@ -43,12 +45,24 @@ public class MainActivity extends AppCompatActivity {
         Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
         float elevation = 6f;
         AutocompletePresenter<Food> foodPresenter = new FoodPresenter(this);
+        AutocompleteCallback<Food> callback = new AutocompleteCallback<Food>() {
+            @Override
+            public boolean onPopupItemClicked(Editable editable, Food item) {
+                editable.clear();
+                editable.append(item.getName());
+                return true;
+            }
+
+            @Override
+            public void onPopupVisibilityChanged(boolean shown) { }
+        };
 
         mFoodAutoComplete = Autocomplete.<Food>on(mEnterFoodEditText)
                 .with(new Autocomplete.SimplePolicy())
                 .with(elevation)
                 .with(backgroundDrawable)
                 .with(foodPresenter)
+                .with(callback)
                 .build();
     }
 }
