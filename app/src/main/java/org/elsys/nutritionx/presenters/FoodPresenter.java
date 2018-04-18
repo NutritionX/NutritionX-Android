@@ -11,8 +11,8 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.fatsecret.platform.model.CompactFood;
-import com.fatsecret.platform.services.android.Request;
 import com.fatsecret.platform.services.Response;
+import com.fatsecret.platform.services.android.Request;
 import com.fatsecret.platform.services.android.ResponseListener;
 import com.otaliastudios.autocomplete.RecyclerViewPresenter;
 
@@ -20,7 +20,6 @@ import org.elsys.nutritionx.R;
 import org.elsys.nutritionx.utils.Screen;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
