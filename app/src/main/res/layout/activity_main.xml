@@ -24,4 +24,15 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="5dp"/>
 
+    <TextView
+        android:id="@+id/summary_text"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:text="Nutrition Not Calculated"
+        app:layout_constraintTop_toBottomOf="@id/enter_food_edit_text"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

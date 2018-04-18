@@ -3,30 +3,45 @@ package org.elsys.nutritionx.presenters;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+import com.fatsecret.platform.model.CompactFood;
+import com.fatsecret.platform.services.android.Request;
+import com.fatsecret.platform.services.Response;
+import com.fatsecret.platform.services.android.ResponseListener;
 import com.otaliastudios.autocomplete.RecyclerViewPresenter;
 
 import org.elsys.nutritionx.R;
-import org.elsys.nutritionx.models.Food;
 import org.elsys.nutritionx.utils.Screen;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class FoodPresenter extends RecyclerViewPresenter<Food> {
+public class FoodPresenter extends RecyclerViewPresenter<CompactFood> {
 
-    private Context mContext;
+    private final Context mContext;
     private Adapter mAdapter;
+
+    private final RequestQueue mRequestQueue;
+    private final Listener mListener;
+    private final Request mRequest;
+    private Timer mRequestTimer = new Timer();
+    private boolean mTimerSet = false;
 
     public FoodPresenter(Context context) {
         super(context);
-        mContext = context;
+        this.mContext = context;
+        this.mRequestQueue = Volley.newRequestQueue(mContext);
+        this.mListener = new Listener();
+        this.mRequest = new Request("5cb365f9eb8c44af82af28216dd142ce", "d71d4d49329f4048a4e808737d3b7a74", mListener);
     }
 
     @Override
@@ -45,21 +60,30 @@ public class FoodPresenter extends RecyclerViewPresenter<Food> {
 
     @Override
     protected void onQuery(@Nullable CharSequence query) {
-        List<Food> foods = Food.findByName();
-
-        if (TextUtils.isEmpty(query)) {
-            mAdapter.setData(foods);
-        } else {
-            List<Food> foundFoodsList = foods.stream()
-                    .filter(f -> f.getName().toLowerCase().contains(query.toString().toLowerCase()))
-                    .collect(Collectors.toList());
-            mAdapter.setData(foundFoodsList);
+        assert query != null;
+        if (mTimerSet) {
+            mRequestTimer.purge();
+            mRequestTimer = new Timer();
         }
-        mAdapter.notifyDataSetChanged();
+        mRequestTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                mRequest.getFoods(mRequestQueue, query.toString(), 0);
+            }
+        }, 1500);
+        mTimerSet = true;
+    }
+
+    class Listener implements ResponseListener {
+        @Override
+        public void onFoodListRespone(Response<CompactFood> foods) {
+            mAdapter.setData(foods.getResults());
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
-        private List<Food> foodsList = new ArrayList<>();
+        private List<CompactFood> foodsList = new ArrayList<>();
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -72,13 +96,14 @@ public class FoodPresenter extends RecyclerViewPresenter<Food> {
                 return;
             }
 
-            final Food food = foodsList.get(position);
+            final CompactFood food = foodsList.get(position);
             holder.mFoodName.setText(food.getName());
             holder.root.setOnClickListener(view -> dispatchClick(food));
         }
 
-        public void setData(List<Food> foodsList) {
-            this.foodsList = foodsList;
+        public void setData(List<CompactFood> foodsList) {
+            this.foodsList.clear();
+            this.foodsList.addAll(foodsList);
         }
 
         @Override

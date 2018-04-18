@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.fatsecret.platform.model.CompactFood;
 import com.otaliastudios.autocomplete.Autocomplete;
 import com.otaliastudios.autocomplete.AutocompleteCallback;
 import com.otaliastudios.autocomplete.AutocompletePolicy;
@@ -26,6 +27,7 @@ import com.otaliastudios.autocomplete.CharPolicy;
 
 import org.elsys.nutritionx.models.Food;
 import org.elsys.nutritionx.presenters.FoodPresenter;
+import org.elsys.nutritionx.services.FoodService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,12 +44,16 @@ public class MainActivity extends AppCompatActivity {
         mEnterFoodLabel = findViewById(R.id.enter_food_label);
         mEnterFoodEditText = findViewById(R.id.enter_food_edit_text);
 
+        FoodService foodService = new FoodService(this, "", "");
+
         Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
-        float elevation = 6f;
-        AutocompletePresenter<Food> foodPresenter = new FoodPresenter(this);
-        AutocompleteCallback<Food> callback = new AutocompleteCallback<Food>() {
+        float elevation = 2f;
+
+        AutocompletePresenter<CompactFood> foodPresenter = new FoodPresenter(this);
+
+        AutocompleteCallback<CompactFood> callback = new AutocompleteCallback<CompactFood>() {
             @Override
-            public boolean onPopupItemClicked(Editable editable, Food item) {
+            public boolean onPopupItemClicked(Editable editable, CompactFood item) {
                 editable.clear();
                 editable.append(item.getName());
                 return true;
@@ -57,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             public void onPopupVisibilityChanged(boolean shown) { }
         };
 
-        mFoodAutoComplete = Autocomplete.<Food>on(mEnterFoodEditText)
+        mFoodAutoComplete = Autocomplete.<CompactFood>on(mEnterFoodEditText)
                 .with(new Autocomplete.SimplePolicy())
                 .with(elevation)
                 .with(backgroundDrawable)
