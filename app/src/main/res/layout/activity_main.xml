@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -30,9 +31,49 @@
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="16sp"
-        android:text="Nutrition Not Calculated"
+        android:text="@string/nutrition_not_calculated"
         app:layout_constraintTop_toBottomOf="@id/enter_food_edit_text"
+        android:layout_marginTop="40dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/measure_button"
+        android:layout_width="100dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/measure_now"
+        app:layout_constraintEnd_toEndOf="@+id/summary_text"
+        app:layout_constraintTop_toBottomOf="@+id/enter_food_edit_text" />
+
+    <TextView
+        android:id="@+id/proteins_text"
+        android:layout_width="235dp"
+        android:layout_height="19dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toStartOf="@+id/measure_button"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/carbs_text" />
+
+    <TextView
+        android:id="@+id/carbs_text"
+        android:layout_width="235dp"
+        android:layout_height="19dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toStartOf="@+id/measure_button"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fats_text" />
+
+    <TextView
+        android:id="@+id/fats_text"
+        android:layout_width="235dp"
+        android:layout_height="19dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toStartOf="@+id/measure_button"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/summary_text" />
 
 </android.support.constraint.ConstraintLayout>
