@@ -17,6 +17,7 @@ import com.fatsecret.platform.services.android.ResponseListener;
 import com.otaliastudios.autocomplete.RecyclerViewPresenter;
 
 import org.elsys.nutritionx.R;
+import org.elsys.nutritionx.services.FoodService;
 import org.elsys.nutritionx.utils.Screen;
 
 import java.util.ArrayList;
@@ -29,18 +30,20 @@ public class FoodPresenter extends RecyclerViewPresenter<CompactFood> {
     private final Context mContext;
     private Adapter mAdapter;
 
+    private FoodService mFoodService;
     private final RequestQueue mRequestQueue;
     private final Listener mListener;
     private final Request mRequest;
     private Timer mRequestTimer = new Timer();
     private boolean mTimerSet = false;
 
-    public FoodPresenter(Context context) {
+    public FoodPresenter(Context context, FoodService foodService) {
         super(context);
         this.mContext = context;
         this.mRequestQueue = Volley.newRequestQueue(mContext);
+        this.mFoodService = foodService;
         this.mListener = new Listener();
-        this.mRequest = new Request("5cb365f9eb8c44af82af28216dd142ce", "d71d4d49329f4048a4e808737d3b7a74", mListener);
+        this.mRequest = mFoodService.newRequest(mListener);
     }
 
     @Override

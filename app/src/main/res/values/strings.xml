@@ -4,4 +4,6 @@
     <string name="enter_food_name">Enter food name:</string>
     <string name="measure_now">Measure Now</string>
     <string name="nutrition_not_calculated">Nutrition Not Calculated</string>
+    <string name="connecting_to_device">Connecting To Device...</string>
+    <string name="unable_to_connect">Unable to connect!</string>
 </resources>
