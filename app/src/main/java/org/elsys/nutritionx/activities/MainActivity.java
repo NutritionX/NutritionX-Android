@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
-import android.util.Log;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -25,6 +25,7 @@ import org.elsys.nutritionx.presenters.FoodPresenter;
 import org.elsys.nutritionx.services.FoodService;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Optional;
 
 import okhttp3.OkHttpClient;
@@ -43,6 +44,13 @@ public class MainActivity extends AppCompatActivity {
     private TextView mProteinText;
     private TextView mCarbsText;
     private TextView mFatsText;
+    private Button mMeasureButton;
+
+    private String mFoodName;
+    private Float mProtein;
+    private Float mCarbs;
+    private Float mFats;
+    private Boolean mUpdated = true;
 
     private OkHttpClient mClient;
 
@@ -63,11 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
         mClient = new OkHttpClient();
 
-        try {
-            updateNutrition();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         mFoodService = new FoodService(this, "5cb365f9eb8c44af82af28216dd142ce", "d71d4d49329f4048a4e808737d3b7a74");
 
@@ -77,6 +80,15 @@ public class MainActivity extends AppCompatActivity {
         mProteinText = findViewById(R.id.protein_text);
         mCarbsText = findViewById(R.id.carbs_text);
         mFatsText = findViewById(R.id.fats_text);
+        mMeasureButton = findViewById(R.id.measure_button);
+
+        mMeasureButton.setOnClickListener(view -> {
+            try {
+                updateNutrition();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
         Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
         float elevation = 2f;
@@ -109,28 +121,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateNutrition() throws IOException {
+        if (mUpdated) {
+            return;
+        }
+
         okhttp3.Request request = new okhttp3.Request.Builder()
                 .url(String.format("http://%s/measure", mServerAddress))
                 .build();
 
-        Log.d("url", String.format("http://%s/measure", mServerAddress));
-
         Response response = mClient.newCall(request).execute();
-        Log.d("response", response.body().string());
+
+        float grams = Integer.valueOf(response.body().string());
+        mSummaryText.setText(String.format(Locale.US, "Nutrition for %.2fg of %s", grams, mFoodName));
+        mProteinText.setText(String.format("Protein: %sg", grams * mProtein));
+        mCarbsText.setText(String.format("Carbs: %sg", grams * mCarbs));
+        mFatsText.setText(String.format("Fats: %sg", grams * mFats));
+
+        mUpdated = true;
     }
 
     class SingleFoodListener implements ResponseListener {
         @Override
         public void onFoodResponse(Food food) {
+            mUpdated = false;
+
             Optional<Serving> standardServing = food.getServings().stream()
                     .filter(s -> s.getNumberOfUnits().toPlainString().equals("100.000"))
                     .findFirst();
 
             standardServing.ifPresent(serving -> {
-                mSummaryText.setText(String.format("Nutrition for 100g of %s", food.getName()));
+                mFoodName = food.getName();
+
+                mSummaryText.setText(String.format("Nutrition for 100g of %s", mFoodName));
+
                 mProteinText.setText(String.format("Protein: %sg", serving.getProtein()));
+                mProtein = Float.valueOf(serving.getProtein().toString()) / 100f;
+
                 mCarbsText.setText(String.format("Carbs: %sg", serving.getCarbohydrate()));
+                mCarbs = Float.valueOf(serving.getCarbohydrate().toString()) / 100f;
+
                 mFatsText.setText(String.format("Fats: %sg", serving.getFat()));
+                mFats = Float.valueOf(serving.getFat().toString()) / 100f;
             });
         }
     }
